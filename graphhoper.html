@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphHopper API Rota Hesaplama</title>
+</head>
+<body>
+    <h1>GraphHopper API Rota Hesaplama</h1>
+    <button onclick="getRoute()">Rota Hesapla</button>
+    <pre id="result"></pre>
+
+    <script>
+        // Rota hesaplama fonksiyonu
+        function getRoute() {
+            const apiUrl = "http://45.32.144.27:8989/route?point=52.564933,13.485604&point=52.459682,13.389434&profile=car&key=87608daa-1621-4410-b6c9-e14e59050e45&type=json";
+            
+            fetch(apiUrl)
+                .then(response => response.json()) // JSON verisini parse et
+                .then(data => {
+                    console.log("Rota Bilgisi:", data);
+                    document.getElementById("result").textContent = JSON.stringify(data, null, 2); // Sonucu ekrana yazdır
+                })
+                .catch(err => {
+                    console.error("Hata:", err);
+                    alert("Bir hata oluştu.");
+                });
+        }
+    </script>
+</body>
+</html>
