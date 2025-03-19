@@ -4,17 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GraphHopper API Rota Hesaplama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        form {
+            background-color: white;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .warning {
+            background-color: #ffcc00;
+            color: #333;
+            padding: 15px;
+            margin: 20px auto;
+            border-radius: 8px;
+            max-width: 600px;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <h1>GraphHopper Linux API Rota Hesaplama</h1>
-    <button onclick="getRoute()">Rota Hesapla</button>
+    <header>
+        <h1>GraphHopper Linux API Rota Hesaplama</h1>
+    </header>
+
+    <div class="warning">
+        <p><strong>Önemli!</strong> Lütfen koordinatları Berlin çevresindeki değerlere yakın giriniz. Örneğin: 52.564933,13.485604. Bu nedenle, rota hesaplaması yalnızca Berlin çevresi için yapılabilmektedir.</p>
+    </div>
+
+    <form id="routeForm">
+        <label for="startLat">Başlangıç Enlem:</label>
+        <input type="number" id="startLat" step="any" required><br><br>
+
+        <label for="startLon">Başlangıç Boylam:</label>
+        <input type="number" id="startLon" step="any" required><br><br>
+
+        <label for="endLat">Bitiş Enlem:</label>
+        <input type="number" id="endLat" step="any" required><br><br>
+
+        <label for="endLon">Bitiş Boylam:</label>
+        <input type="number" id="endLon" step="any" required><br><br>
+
+        <button type="button" onclick="getRoute()">Rota Hesapla</button>
+    </form>
+
     <pre id="result"></pre>
 
     <script>
         // Rota hesaplama fonksiyonu
         function getRoute() {
-            const apiUrl = "http://45.32.144.27:8989/route?point=52.564933,13.485604&point=52.459682,13.389434&profile=car&key=87608daa-1621-4410-b6c9-e14e59050e45&type=json";
-            
+            const startLat = document.getElementById("startLat").value;
+            const startLon = document.getElementById("startLon").value;
+            const endLat = document.getElementById("endLat").value;
+            const endLon = document.getElementById("endLon").value;
+
+            if (!startLat || !startLon || !endLat || !endLon) {
+                alert("Lütfen tüm koordinatları girin.");
+                return;
+            }
+
+            // Koordinatların Berlin çevresine yakın olup olmadığını kontrol et
+            const berlinBounds = {
+                minLat: 52.3,
+                maxLat: 52.7,
+                minLon: 13.0,
+                maxLon: 13.8
+            };
+
+            if (startLat < berlinBounds.minLat || startLat > berlinBounds.maxLat || 
+                startLon < berlinBounds.minLon || startLon > berlinBounds.maxLon ||
+                endLat < berlinBounds.minLat || endLat > berlinBounds.maxLat ||
+                endLon < berlinBounds.minLon || endLon > berlinBounds.maxLon) {
+                alert("Koordinatlar yalnızca Berlin çevresi için geçerli olmalıdır (yaklaşık olarak 52.3-52.7 enlem ve 13.0-13.8 boylam aralığı).");
+                return;
+            }
+
+            const apiUrl = `http://45.32.144.27:8989/route?point=${startLat},${startLon}&point=${endLat},${endLon}&profile=car&key=87608daa-1621-4410-b6c9-e14e59050e45&type=json`;
+
             fetch(apiUrl)
                 .then(response => response.json()) // JSON verisini parse et
                 .then(data => {
