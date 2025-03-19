@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphHopper Rota Hesaplama</title>
+    <script src="https://unpkg.com/graphhopper-js-api-client"></script>
+</head>
+<body>
+    <h1>GraphHopper API Rota Hesaplama</h1>
+    <button onclick="getRoute()">Rota Hesapla</button>
+
+    <script>
+        // API anahtarını buraya ekle
+        const apiKey = "87608daa-1621-4410-b6c9-e14e59050e45"; // Buraya kendi API anahtarını ekle
+
+        // Rota hesaplama fonksiyonu
+        function getRoute() {
+            let ghRouting = new GraphHopper.Routing({
+                key: apiKey,
+                profile: "car", // Araç profili
+                elevation: false // Yükseklik bilgisi dahil edilmiyor
+            });
+
+            // İki nokta arasındaki rota isteği
+            ghRouting.doRequest({
+                points: [[8.534317, 47.400905], [8.538265, 47.394108]] // Koordinatlar (başlangıç ve varış noktası)
+            })
+            .then(json => {
+                // JSON verisini konsola yazdır
+                console.log("Rota Bilgisi:", json);
+                alert("Rota bilgisi terminalde görüntüleniyor!");
+            })
+            .catch(err => {
+                // Hata durumunda mesaj yazdır
+                console.error("Hata:", err.message);
+                alert("Bir hata oluştu. Konsolu kontrol edin.");
+            });
+        }
+    </script>
+</body>
+</html>
